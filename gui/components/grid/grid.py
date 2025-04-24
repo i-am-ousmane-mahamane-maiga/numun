@@ -8,9 +8,10 @@ from kivy.lang import Builder
 from kivy.properties import DictProperty
 from kivy.uix.gridlayout import GridLayout
 from kivymd.toast import toast
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.label import MDLabel
+
+import numpy
+from scipy.signal import convolve2d
 
 from gui.components.cell.cell import Cell
 
@@ -40,6 +41,8 @@ class Grid(MDFloatLayout):
         self.maximum_cell_size = None
         self.zoomable = False
         self.cells = {}
+        self.running = False
+        self.simulator = None
 
         super().__init__(*args, **kwargs)
 
@@ -215,6 +218,43 @@ class Grid(MDFloatLayout):
                     raise ValueError(f"{key} is missing in parameters so can not be updated")
 
 
+    def idle(self):
+        simulator = self.get_simulator()
+        print(hash(str(simulator.content)))
+        print(hash(str(simulator.content)))
+        simulator.tick()
+        print(hash(str(simulator.content)))
+        print(hash(str(simulator.content)))
+        self.set_simulator()
+
+
+    def set_simulator(self):
+        cells = list(reversed(self.content.children))
+        frame = []
+
+        for row in self.simulator.content:
+            frame.extend(row)
+
+        else:
+            for i in range(len(frame)):
+                cells[i].alive = frame[i] == 1
+
+    def get_simulator(self):
+        if not self.simulator:
+            cells = list(reversed(self.content.children))
+            frame = []
+
+            for i in range(self.rows):
+                frame.append([1 if cell.alive else 0 for cell in cells[:self.cols]])
+                cells = cells[self.cols:]
+
+            else:
+                self.simulator = Simulator(frame)
+
+        return self.simulator
+
+
+
     def on_parameters(self, instance, value):
         _parameters = self._parameters
 
@@ -259,8 +299,6 @@ class Grid(MDFloatLayout):
     def _on_key_down(self, window, key, scancode, codepoint, modifiers):
         key_string = Window._system_keyboard.keycode_to_string(key)
 
-        print(key_string, "ctrl" in modifiers)
-
         if key_string == 'z' and 'ctrl' in modifiers:
             self.zoomable = not self.zoomable
             toast(f"Zoom : {self.zoomable}", duration=2.5)
@@ -284,3 +322,103 @@ class Grid(MDFloatLayout):
                     }
                 )
             )
+
+        elif key_string == "spacebar":
+            self.idle()
+
+
+class Simulator:
+    def __init__(self, initial):
+        verificators = {
+            "is_list": isinstance(initial, list),
+            "is_list_of_lists": {
+                isinstance(element, list)
+                for element in initial
+            } == {True},
+            "are_same_size_lists": len(
+                {
+                    len(element)
+                    for element in initial
+                }
+            ) == 1,
+            "only_0_and_1_values": {
+                value for line in initial for value in line
+            } in [{0}, {1}, {0, 1}]
+        }
+
+        for key, value in verificators.items():
+            if not value:
+                raise ValueError(f"Simulator.initial verification failed : {key}")
+
+        self.content = numpy.array(initial)
+        self.water = numpy.zeros((256, 256), dtype=numpy.int8)
+
+    def pool(self, direction):
+        water = self.water
+        water_size = water.shape
+        content = self.content
+        content_size = content.shape
+
+        start_x = (water_size[0] - content_size[0]) // 2
+        start_y = (water_size[1] - content_size[1]) // 2
+
+        match direction:
+            case "in":
+                self.water[start_x:start_x + content_size[0], start_y:start_y + content_size[1]] = content
+
+            case "out":
+                self.content = self.water[start_x:start_x + content_size[0], start_y:start_y + content_size[1]]
+                self.water = numpy.zeros((256, 256), dtype=numpy.int8)
+
+            case _:
+                raise ValueError("direction not supported")
+
+    def tick(self, count=1):
+        if count:
+            self.pool("in")
+            water = self.water
+
+            # Kernel to count 8 neighbors
+            kernel = numpy.array([[1, 1, 1],
+                               [1, 0, 1],
+                               [1, 1, 1]])
+
+            # Count neighbors using convolution (zero-padded at the edges)
+            neighbors = convolve2d(water, kernel, mode="same", boundary="fill", fillvalue=0)
+
+            # Apply Game of Life rules
+            born = (water == 0) & (neighbors == 3)
+            survive = (water == 1) & ((neighbors == 2) | (neighbors == 3))
+
+            # Create new water
+            new_water = numpy.zeros_like(water)
+            new_water[born | survive] = 1
+
+            self.water = new_water
+
+            self.pool("out")
+
+            self.tick(count - 1)
+
+    def switch(self, x, y):
+        value = self.content[x][y]
+
+        if value:
+            new_value = 0
+
+        else:
+            new_value = 1
+
+        self.content[x][y] = new_value
+
+    def clear(self, region=None):
+        pass
+
+    def load(self):
+        pass
+
+    def save(self):
+        pass
+
+    def export(self):
+        pass

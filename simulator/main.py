@@ -2,7 +2,7 @@ import numpy
 from scipy.signal import convolve2d
 
 
-class Grid:
+class Simulator:
     def __init__(self, initial):
         verificators = {
             "is_list": isinstance(initial, list),
@@ -23,7 +23,7 @@ class Grid:
 
         for key, value in verificators.items():
             if not value:
-                raise ValueError(f"Grid.initial verification failed : {key}")
+                raise ValueError(f"Simulator.initial verification failed : {key}")
 
         self.content = numpy.array(initial)
         self.water = numpy.zeros((256, 256), dtype=numpy.int8)
@@ -97,12 +97,3 @@ class Grid:
 
     def export(self):
         pass
-
-a = Grid(
-    [
-        [0, 0, 0],
-        [1, 1, 1],
-        [0, 0, 0],
-    ]
-)
-
