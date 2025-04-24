@@ -5,3 +5,5 @@ kivymd==1.2.0
 
 screeninfo==0.8.1
 msgpack==1.1.0
+numpy==2.2.5
+scipy==1.15.2
