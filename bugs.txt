@@ -1,0 +1,92 @@
+########################################################################################################################
+id:
+d66c2454-4b95-4269-9495-ead3fb556a0c
+
+description:
+When the window is dragged and dropped in monitor's left corners the method get_current_monitor return None and cause the following error
+
+priority:
+10%
+
+created_at:
+2025-04-16 21:51:16.892031
+
+solved_at:
+2025-04-16 21:55:11.977622
+
+Solution:
+I save the new current_monitor in Main.current_monitor everytime I get it, return Main.current_monitor when I can't get the new current_monitor
+
+difficulty:
+5%
+
+traceback:
+[INFO   ] [ProbeSysfs  ] device match: /dev/input/event4
+[INFO   ] [MTD         ] Read event from </dev/input/event4>
+[INFO   ] [Base        ] Start application main loop
+[WARNING] [MTD         ] Unable to open device "/dev/input/event4". Please ensure you have the appropriate permissions.
+[INFO   ] [Base        ] Leaving application in progress...
+ Traceback (most recent call last):
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   [Previous line repeated 3 more times]
+   File "kivy/core/window/_window_sdl2.pyx", line 58, in kivy.core.window._window_sdl2._WindowSDL2Storage.cb_event_filter
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/core/window/window_sdl2.py", line 239, in _event_filter
+     from kivy.app import App
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 58, in kivy.core.window._window_sdl2._WindowSDL2Storage.cb_event_filter
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/core/window/window_sdl2.py", line 239, in _event_filter
+     from kivy.app import App
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   [Previous line repeated 2 more times]
+   File "kivy/core/window/_window_sdl2.pyx", line 58, in kivy.core.window._window_sdl2._WindowSDL2Storage.cb_event_filter
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/core/window/window_sdl2.py", line 239, in _event_filter
+     from kivy.app import App
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 58, in kivy.core.window._window_sdl2._WindowSDL2Storage.cb_event_filter
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/core/window/window_sdl2.py", line 239, in _event_filter
+     from kivy.app import App
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   File "kivy/core/window/_window_sdl2.pyx", line 28, in kivy.core.window._window_sdl2._event_filter
+   [Previous line repeated 3 more times]
+   File "kivy/core/window/_window_sdl2.pyx", line 58, in kivy.core.window._window_sdl2._WindowSDL2Storage.cb_event_filter
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/core/window/window_sdl2.py", line 280, in _event_filter
+     EventLoop.idle()
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/base.py", line 379, in idle
+     Clock.tick()
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/clock.py", line 733, in tick
+     self.post_idle(ts, self.idle())
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/clock.py", line 776, in post_idle
+     self._process_events()
+   File "kivy/_clock.pyx", line 620, in kivy._clock.CyClockBase._process_events
+   File "kivy/_clock.pyx", line 653, in kivy._clock.CyClockBase._process_events
+   File "kivy/_clock.pyx", line 649, in kivy._clock.CyClockBase._process_events
+   File "kivy/_clock.pyx", line 218, in kivy._clock.ClockEvent.tick
+   File "/home/amimahamane/PycharmProjects/numun/gui/main.py", line 57, in resize
+     if self.are_close(size[0], monitor["width"]//2, size[0]//100):
+                                ~~~~~~~^^^^^^^^^
+ TypeError: 'NoneType' object is not subscriptable
+
+ The above exception was the direct cause of the following exception:
+
+ Traceback (most recent call last):
+   File "/home/amimahamane/PycharmProjects/numun/gui/main.py", line 91, in <module>
+     Main().run()
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/app.py", line 956, in run
+     runTouchApp()
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/base.py", line 574, in runTouchApp
+     EventLoop.mainloop()
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/base.py", line 341, in mainloop
+     self.window.mainloop()
+   File "/home/amimahamane/PycharmProjects/numun/.venv/lib/python3.12/site-packages/kivy/core/window/window_sdl2.py", line 574, in mainloop
+     event = self._win.poll()
+             ^^^^^^^^^^^^^^^^
+ SystemError: <cyfunction _WindowSDL2Storage.poll at 0x7a97d36f06c0> returned a result with an exception set
+
+Process finished with exit code 1

@@ -1,0 +1,22 @@
+<Grid>
+    dimension: (32, 32)
+    cols: self.dimension[0]
+    rows: self.dimension[1]
+
+    cell_size: 40
+    life_color: (0, 0, 0, 1)
+    death_color: (1, 1, 1, 1)
+    lines_color: (0, 0, 0, .2)
+    show_lines: True
+    lines_width: 1
+
+    md_bg_color: 0, 0, 0, .2
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        pos_hint: {"center_x": .5, "center_y": .5}
+        md_bg_color: root.lines_color
+
+        ScrollView:
+            id: ground
+            effect_cls: "ScrollEffect"
